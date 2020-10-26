@@ -153,6 +153,19 @@ def calculate_hist_per_channel(image):
     b_hist = [b_calc[i] if i in b_calc else 0 for i in range(256)]
     b_normalized = b_hist / np.linalg.norm(b_hist)
 
+    rgb_planes = cv2.split(image)
+    histSize = 256
+    histRange = (0, 256)  # the upper boundary is exclusive
+    accumulate = False
+    r_hist_opencv = cv2.calcHist(rgb_planes, [0], None, [histSize], histRange, accumulate=accumulate)
+    g_hist_opencv = cv2.calcHist(rgb_planes, [1], None, [histSize], histRange, accumulate=accumulate)
+    b_hist_opencv = cv2.calcHist(rgb_planes, [2], None, [histSize], histRange, accumulate=accumulate)
+
+    # Testing if my histogram calculation is the same as in OpenCV
+    assert (r_hist_opencv[:, 0] == r_hist).all()
+    assert (g_hist_opencv[:, 0] == g_hist).all()
+    assert (b_hist_opencv[:, 0] == b_hist).all()
+
     return np.vstack([r_normalized, g_normalized, b_normalized])
 
 
